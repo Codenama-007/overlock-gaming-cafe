@@ -1,26 +1,492 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --overclock-blue: #008cff;
+  --overclock-orange: #ff7a00;
+  --overclock-black: #050505;
+  --overclock-deep: #0a0f18;
+  --electric-blue: #00b7ff;
+  --cyan: #00e5ff;
+  --warm-orange: #ff9d00;
+  --deep-purple: #4b2a8f;
+  --silver: #c0c0c0;
+  --white: #f5f7fa;
+  --background: #050505;
+  --surface: #0a0f18;
+  --surface-elevated: #101722;
+  --border: rgba(0, 140, 255, 0.35);
+  --text-primary: #f5f7fa;
+  --text-secondary: #9aa4b2;
+  --success: #00ff88;
+  --danger: #ff3b30;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-oc-blue: #008cff;
+  --color-oc-blue-bright: #00b7ff;
+  --color-oc-cyan: #00e5ff;
+  --color-oc-orange: #ff7a00;
+  --color-oc-orange-warm: #ff9d00;
+  --color-oc-purple: #4b2a8f;
+  --color-oc-silver: #c0c0c0;
+  --color-oc-white: #f5f7fa;
+  --color-oc-text: #9aa4b2;
+  --color-oc-success: #00ff88;
+  --color-oc-danger: #ff3b30;
+  --color-oc-surface: #0a0f18;
+  --color-oc-elevated: #101722;
+  --font-display: var(--font-orbitron);
+  --font-heading: var(--font-rajdhani);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+}
+
+section {
+  scroll-margin-top: 84px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--overclock-blue);
+  color: var(--overclock-black);
+}
+
+:focus-visible {
+  outline: 2px solid var(--electric-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layered background system                                           */
+/* ------------------------------------------------------------------ */
+
+.oc-background {
+  position: relative;
+  background-color: var(--overclock-black);
+  background-image:
+    radial-gradient(
+      ellipse 90% 60% at 50% -10%,
+      rgba(0, 140, 255, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 90% 110%,
+      rgba(255, 122, 0, 0.07),
+      transparent 60%
+    );
+}
+
+.oc-grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 140, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 140, 255, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    black 0%,
+    transparent 100%
+  );
+}
+
+.oc-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.16) 3px,
+    rgba(0, 0, 0, 0.16) 4px
+  );
+  opacity: 0.35;
+}
+
+/* ------------------------------------------------------------------ */
+/* Typography helpers                                                  */
+/* ------------------------------------------------------------------ */
+
+.oc-section-badge {
+  font-family: var(--font-rajdhani);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--electric-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.oc-section-badge::before,
+.oc-section-badge::after {
+  content: "";
+  height: 1px;
+  width: 2.25rem;
+  background: linear-gradient(90deg, transparent, var(--electric-blue));
+}
+
+.oc-section-badge::after {
+  background: linear-gradient(90deg, var(--electric-blue), transparent);
+}
+
+.oc-display-text {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+
+.oc-mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ------------------------------------------------------------------ */
+/* Buttons                                                             */
+/* ------------------------------------------------------------------ */
+
+.oc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-rajdhani);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 200ms ease;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.oc-btn--primary {
+  background: linear-gradient(
+    180deg,
+    var(--warm-orange),
+    var(--overclock-orange)
+  );
+  color: var(--overclock-black);
+  border-color: var(--overclock-orange);
+  box-shadow: 0 0 20px rgba(255, 122, 0, 0.25);
+}
+
+.oc-btn--primary:hover {
+  box-shadow: 0 0 28px rgba(255, 122, 0, 0.45), 0 0 0 1px var(--electric-blue);
+  transform: translateY(-2px);
+}
+
+.oc-btn--secondary {
+  background: rgba(10, 15, 24, 0.6);
+  color: var(--text-primary);
+  border-color: rgba(0, 140, 255, 0.6);
+}
+
+.oc-btn--secondary:hover {
+  border-color: var(--electric-blue);
+  box-shadow: 0 0 22px rgba(0, 140, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.oc-btn--ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.oc-btn--ghost:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.oc-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cards / surfaces                                                    */
+/* ------------------------------------------------------------------ */
+
+.oc-card {
+  background: rgba(10, 15, 24, 0.85);
+  border: 1px solid rgba(0, 140, 255, 0.3);
+  border-radius: var(--radius-md);
+  transition: all 200ms ease;
+}
+
+.oc-card--hover:hover {
+  transform: translateY(-4px);
+  border-color: var(--overclock-blue);
+  box-shadow: 0 0 25px rgba(0, 140, 255, 0.18);
+}
+
+.oc-hud-frame {
+  position: relative;
+  background: rgba(10, 15, 24, 0.85);
+  border: 1px solid rgba(0, 140, 255, 0.35);
+  border-radius: var(--radius-md);
+}
+
+.oc-hud-frame::before,
+.oc-hud-frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+
+.oc-hud-frame::before {
+  top: -2px;
+  left: -2px;
+  border-top: 2px solid var(--overclock-orange);
+  border-left: 2px solid var(--overclock-orange);
+  border-top-left-radius: 6px;
+}
+
+.oc-hud-frame::after {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 2px solid var(--overclock-blue);
+  border-right: 2px solid var(--overclock-blue);
+  border-bottom-right-radius: 6px;
+}
+
+.oc-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 140, 255, 0.5),
+    transparent
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Glow utilities                                                      */
+/* ------------------------------------------------------------------ */
+
+.oc-glow-blue {
+  text-shadow: 0 0 8px rgba(0, 140, 255, 0.65);
+}
+
+.oc-glow-orange {
+  text-shadow: 0 0 12px rgba(255, 122, 0, 0.55);
+}
+
+/* ------------------------------------------------------------------ */
+/* Hero HUD visual                                                     */
+/* ------------------------------------------------------------------ */
+
+@keyframes oc-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes oc-ring-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes oc-hud-ping {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  80%,
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+.oc-hud-ring {
+  border-radius: 9999px;
+  position: relative;
+}
+
+.oc-hud-ring--dash {
+  border: 1px dashed rgba(0, 140, 255, 0.5);
+  animation: oc-ring-spin 40s linear infinite;
+}
+
+.oc-hud-ring--track {
+  background: conic-gradient(
+    from -45deg,
+    transparent 0%,
+    rgba(255, 122, 0, 0.9) 22%,
+    transparent 34%,
+    transparent 55%,
+    rgba(0, 140, 255, 0.9) 78%,
+    transparent 90%
+  );
+  mask: radial-gradient(
+    closest-side,
+    transparent 78%,
+    black 80%,
+    black 100%
+  );
+  animation: oc-ring-spin-reverse 12s linear infinite;
+}
+
+.oc-hud-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--overclock-orange);
+  box-shadow: 0 0 12px rgba(255, 122, 0, 0.9);
+}
+
+.oc-hud-ping {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: rgba(0, 140, 255, 0.25);
+  animation: oc-hud-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes oc-speed-lines {
+  from {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-140px);
+    opacity: 0;
+  }
+}
+
+.oc-speed-line {
+  position: absolute;
+  width: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to top,
+    transparent,
+    var(--electric-blue)
+  );
+  animation: oc-speed-lines 1.6s linear infinite;
+}
+
+/* ------------------------------------------------------------------ */
+/* Glitch                                                              */
+/* ------------------------------------------------------------------ */
+
+@keyframes oc-glitch-1 {
+  0%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    transform: translate(0);
+  }
+  20% {
+    clip-path: inset(20% 0 55% 0);
+    transform: translate(-3px, 1px);
+  }
+  40% {
+    clip-path: inset(60% 0 10% 0);
+    transform: translate(3px, -1px);
+  }
+  60% {
+    clip-path: inset(5% 0 80% 0);
+    transform: translate(-2px, 0);
+  }
+}
+
+.oc-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.oc-glitch::before,
+.oc-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.oc-glitch::before {
+  color: var(--electric-blue);
+  animation: oc-glitch-1 3s infinite linear alternate-reverse;
+}
+
+.oc-glitch::after {
+  color: var(--overclock-orange);
+  animation: oc-glitch-1 2.6s infinite linear alternate-reverse;
+  left: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Timer?
+/* Warning pulse (used on admin dashboard session timer)              */
+/* ------------------------------------------------------------------ */
+
+@keyframes oc-pulse-warning {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(255, 59, 48, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 59, 48, 0.65);
+  }
+}
+
+.oc-warning-pulse {
+  animation: oc-pulse-warning 1.4s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion                                                      */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
