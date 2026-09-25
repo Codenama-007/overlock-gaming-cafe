@@ -108,8 +108,11 @@ export async function startSession(
 }
 
 /**
- * Removes the active session entry. The booking itself is kept, so the same
- * customer can be started again for a later slot.
+ * Ends a session permanently: the session document and the booking behind it
+ * are both removed, so the phone number stops resolving to this customer.
+ *
+ * The booking is the only record that the customer visited, so this cannot be
+ * undone. The UI asks for confirmation before calling it.
  */
 export async function deleteSession(
   _prevState: DeleteSessionState,
@@ -124,9 +127,20 @@ export async function deleteSession(
 
   try {
     await connectDb();
-    const deleted = await GamingSessionModel.findByIdAndDelete(sessionId);
-    if (!deleted) {
+
+    const session = await GamingSessionModel.findById(sessionId).lean();
+    if (!session) {
       return { error: "This session has already ended." };
+    }
+
+    // The session goes first. If the booking delete then fails, the customer
+    // can still be found and restarted — the safe way round. Deleting the
+    // booking first could leave a live session pointing at nothing.
+    await GamingSessionModel.deleteOne({ _id: session._id });
+
+    // Legacy documents predate the booking reference and have no such field.
+    if (session.booking && mongoose.Types.ObjectId.isValid(session.booking)) {
+      await BookingModel.deleteOne({ _id: session.booking });
     }
 
     refresh();

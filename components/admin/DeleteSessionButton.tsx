@@ -31,9 +31,13 @@ export function DeleteSessionButton({
       <input type="hidden" name="sessionId" value={session.id} />
       <button
         type="submit"
-        disabled={pending || confirming}
+        disabled={pending}
         onBlur={() => setConfirming(false)}
-        title={confirming ? "Click DELETE again to confirm" : "Delete session"}
+        title={
+          confirming
+            ? "Click again to permanently delete the session and booking"
+            : "End session"
+        }
         className={`oc-btn oc-btn--ghost !px-3 !py-2 text-xs ${
           confirming
             ? "!border-oc-danger !text-oc-danger"
@@ -53,8 +57,9 @@ export function DeleteSessionButton({
         </p>
       ) : null}
       {confirming ? (
-        <p className="oc-mono-label mt-2 text-[9px] text-oc-danger">
-          Ends {session.username}&apos;s session
+        <p className="oc-mono-label mt-2 max-w-[16rem] text-[9px] leading-relaxed text-oc-danger">
+          Ends {session.username}&apos;s session and deletes the booking
+          permanently.
         </p>
       ) : null}
     </form>
