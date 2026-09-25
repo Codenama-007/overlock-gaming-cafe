@@ -1,51 +1,50 @@
 import "server-only";
 
 import mongoose from "mongoose";
-import type { GamePlatform, SessionStatus } from "@/lib/types";
 
 export type GamingSessionDoc = {
   _id: mongoose.Types.ObjectId;
-  customer: mongoose.Types.ObjectId;
-  platform: GamePlatform;
-  date: Date;
-  durationMinutes: number;
-  startTime?: Date | null;
-  endTime?: Date | null;
-  startedAt?: Date | null;
-  status: SessionStatus;
+  booking: mongoose.Types.ObjectId;
+  startedAt: Date;
+  deleteAt: Date;
   createdAt: Date;
   updatedAt: Date;
 };
 
+/**
+ * A session is a temporary record that exists only while a gamer is playing.
+ *
+ * `startedAt` is the single source of truth. Everything the dashboard shows is
+ * derived from it plus the booking duration:
+ *
+ *   endTime    = startedAt + booking.durationMinutes
+ *   remaining  = endTime - now
+ *   warning    = remaining <= 20 minutes  (display only, never stored)
+ *
+ * `deleteAt` is endTime + a 10 minute grace period. The TTL index below makes
+ * MongoDB remove the document on its own, so cleanup never depends on a browser
+ * being open.
+ */
 const gamingSessionSchema = new mongoose.Schema(
   {
-    customer: {
+    booking: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+      ref: "Booking",
       required: true,
     },
-    platform: {
-      type: String,
-      enum: ["PC", "PS5"],
-      required: true,
-    },
-    date: { type: Date, required: true },
-    durationMinutes: { type: Number, required: true, min: 1 },
-    startTime: { type: Date },
-    endTime: { type: Date },
-    startedAt: { type: Date },
-    status: {
-      type: String,
-      enum: ["BOOKED", "ACTIVE", "WARNING", "COMPLETED", "CANCELLED"],
-      default: "BOOKED",
-    },
+    startedAt: { type: Date, required: true },
+    deleteAt: { type: Date, required: true },
   },
   { timestamps: true },
 );
 
-gamingSessionSchema.index({ customer: 1, createdAt: -1 });
-gamingSessionSchema.index({ status: 1 });
+gamingSessionSchema.index({ booking: 1 });
+gamingSessionSchema.index({ startedAt: 1 });
+// Database-side auto-deletion. Documents without `deleteAt` are never touched.
+gamingSessionSchema.index({ deleteAt: 1 }, { expireAfterSeconds: 0 });
 
 export const GamingSessionModel =
-  (mongoose.models.GamingSession as mongoose.Model<GamingSessionDoc> | undefined) ??
+  (mongoose.models.GamingSession as
+    | mongoose.Model<GamingSessionDoc>
+    | undefined) ??
   mongoose.model<GamingSessionDoc>("GamingSession", gamingSessionSchema);

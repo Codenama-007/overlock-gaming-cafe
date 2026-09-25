@@ -1,14 +1,14 @@
-import { CheckCircle2, FileQuestion } from "lucide-react";
-import type { SearchCustomerState } from "@/app/actions/customers";
-import { BookingsList } from "@/components/admin/BookingsList";
+import { CheckCircle2, FileQuestion, Hash, Phone, Timer } from "lucide-react";
+import type { SearchBookingState } from "@/app/actions/sessions";
+import { getDurationLabel } from "@/lib/sessionTiming";
 
-export function CustomerResult({ state }: { state: SearchCustomerState }) {
+export function CustomerResult({ state }: { state: SearchBookingState }) {
   if (!state) {
     return (
       <div className="border border-oc-blue/25 bg-oc-surface px-5 py-6">
         <p className="flex items-center gap-3 text-sm text-oc-text">
           <FileQuestion className="h-5 w-5 text-electric-blue" />
-          Search a customer&apos;s phone number to get started.
+          Search a phone number to get started.
         </p>
       </div>
     );
@@ -23,6 +23,8 @@ export function CustomerResult({ state }: { state: SearchCustomerState }) {
     );
   }
 
+  const { booking, session } = state;
+
   return (
     <div className="oc-hud-frame px-5 py-6">
       <p className="oc-mono-label flex items-center gap-2 text-[9px] text-oc-success">
@@ -33,20 +35,37 @@ export function CustomerResult({ state }: { state: SearchCustomerState }) {
         <div className="flex items-center justify-between gap-4">
           <dt className="oc-mono-label">Name</dt>
           <dd className="font-heading text-lg font-bold uppercase tracking-wide text-oc-white">
-            {state.customer.name}
+            {booking.username}
           </dd>
         </div>
         <div className="flex items-center justify-between gap-4">
           <dt className="oc-mono-label">Phone</dt>
-          <dd className="font-heading font-bold tracking-wide text-oc-white">
-            {state.customer.phone}
+          <dd className="flex items-center gap-2 font-mono text-xs text-oc-white">
+            <Phone className="h-3.5 w-3.5 text-electric-blue" />
+            {booking.phone}
+          </dd>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <dt className="oc-mono-label">Booked Duration</dt>
+          <dd className="flex items-center gap-2 font-heading font-bold uppercase tracking-wide text-oc-white">
+            <Timer className="h-4 w-4 text-electric-blue" />
+            {getDurationLabel(booking.durationMinutes)}
+          </dd>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <dt className="oc-mono-label">Reference</dt>
+          <dd className="flex items-center gap-2 font-mono text-xs text-oc-text">
+            <Hash className="h-3.5 w-3.5 text-electric-blue" />#
+            {booking.id.slice(-6).toUpperCase()}
+          </dd>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <dt className="oc-mono-label">Status</dt>
+          <dd className="font-heading text-xs font-bold uppercase tracking-widest text-oc-white">
+            {session ? "Playing now" : "Booked"}
           </dd>
         </div>
       </dl>
-      <div className="mt-5">
-        <p className="oc-mono-label text-[9px]">Bookings</p>
-        <BookingsList sessions={state.sessions} />
-      </div>
     </div>
   );
 }

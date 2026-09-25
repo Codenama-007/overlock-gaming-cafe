@@ -28,40 +28,36 @@ export type DurationOption = {
   minutes: number;
 };
 
-export type PlatformOption = {
-  value: GamePlatform;
-  label: string;
-};
-
 export type BookingDetails = {
-  name: string;
+  username: string;
   phone: string;
-  platform: GamePlatform;
-  date: string;
   durationMinutes: number;
 };
 
-export type SessionStatus =
-  | "BOOKED"
-  | "ACTIVE"
-  | "WARNING"
-  | "COMPLETED"
-  | "CANCELLED";
-
-export type Customer = {
+/**
+ * A customer's submitted booking request. There are no customer accounts — a
+ * booking is just this record, and the admin looks it up by phone number.
+ */
+export type Booking = {
   id: string;
-  name: string;
+  username: string;
   phone: string;
+  durationMinutes: number;
+  createdAt: string;
 };
 
-export type GamingSession = {
+/**
+ * A temporary record created when the admin starts a gamer's timer. The end
+ * time, countdown and 20-minute warning are all derived from `startedAt`; none
+ * of them are stored.
+ */
+export type ActiveSession = {
   id: string;
-  customerId: string;
-  platform: GamePlatform;
-  date: string;
+  bookingId: string;
+  username: string;
+  phone: string;
   durationMinutes: number;
-  startTime?: string;
-  endTime?: string;
-  startedAt?: string;
-  status: SessionStatus;
+  startedAt: string;
+  endTime: string;
+  deleteAt: string;
 };
